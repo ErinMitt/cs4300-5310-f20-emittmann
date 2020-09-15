@@ -109,7 +109,7 @@ const render = () => {
    gl.uniform4f(uniformColor,
      shape.color.red,
      shape.color.green,
-     shape.color.blue, 1);
+     shape.color.blue, .5);
 
    if(shape.type === RECTANGLE) {
      renderRectangle(shape)
