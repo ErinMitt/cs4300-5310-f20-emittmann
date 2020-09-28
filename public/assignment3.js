@@ -264,6 +264,8 @@ const renderRectangle = (rectangle) => {
   gl.drawArrays(gl.TRIANGLES, 0, 6);
 }
 const renderCircle = (circle) => {
+    const x0 = circle.position.x;
+    const y0 = circle.position.y;
     const x1 = circle.position.x
       - circle.dimensions.width/2;
     const y1 = circle.position.y
@@ -272,11 +274,39 @@ const renderCircle = (circle) => {
       + circle.dimensions.width/2;
     const y2 = circle.position.y
       + circle.dimensions.height/2;
+    const x3 = circle.position.x// 30 degrees off of vertical
+    - circle.dimensions.width/4;
+    const x4 = circle.position.x// 60 degrees off of vertical
+    - Math.sqrt(3)*circle.dimensions.width/4;
+    const y3 = circle.position.y
+    - circle.dimensions.height/4;// 30 degrees off of horizontal
+    const y4 = circle.position.y
+    - Math.sqrt(3)*circle.dimensions.height/4;// 60 degrees off of horizontal  
+    const x5 = circle.position.x// 30 degrees off of vertical
+    + circle.dimensions.width/4;
+    const x6 = circle.position.x// 60 degrees off of vertical
+    + Math.sqrt(3)*circle.dimensions.width/4;
+    const y5 = circle.position.y
+    + circle.dimensions.height/4;// 30 degrees off of horizontal
+    const y6 = circle.position.y
+    + Math.sqrt(3)*circle.dimensions.height/4;// 60 degrees off of horizontal  
+
   
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-      x1, y1, x2, y1, x1, y2,
-      x1, y2, x2, y1, x2, y2,
+      x0, y0, x3, y4, x0, y1,
+      x0, y0, x3,y4, x4, y3,
+      x0, y0, x4,y3, x1, y0,
+      x0, y0, x1, y0, x4,y5,
+      x0, y0, x4, y5, x3, y6,
+      x0, y0, x3, y6, x0, y2,
+      x0, y0, x0, y2, x5, y6, 
+      x0, y0, x5, y6, x6, y5,
+      x0, y0, x6, y5, x2, y0, 
+      x0, y0, x2, y0, x6, y3,
+      x0, y0, x6, y3, x5, y4,
+      x0, y0, x5, y4, x0, y1,
+
     ]), gl.STATIC_DRAW);
   
-    gl.drawArrays(gl.TRIANGLES, 0, 6);
+    gl.drawArrays(gl.TRIANGLES, 0, 36);
   }
