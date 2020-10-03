@@ -21,7 +21,7 @@ let shapes = [
       blue: Math.random()
     }
   },
-  {
+  {//test123
     type: TRIANGLE,
     position: {
       x: 300,
