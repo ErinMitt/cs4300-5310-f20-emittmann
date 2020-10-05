@@ -29,17 +29,11 @@
 <script id="vertex-shader-2d"
         type="x-shader/x-vertex">
   attribute vec2 a_coords;
-  uniform   vec2 u_resolution;
-
-  void main() {
-    vec2 zeroToOne = a_coords / u_resolution;
-    vec2 zeroToTwo = zeroToOne * 2.0;
-    vec2 minusOneToOne = zeroToTwo - 1.0;
-    vec2 clipSpace = minusOneToOne * vec2(1, -1);
-
-    gl_Position = vec4(clipSpace, 0, 1);
-  }
-
+ uniform mat3 u_matrix;
+ void main() {
+  // multiply coordinates by a transformation matrix
+  gl_Position = vec4((u_matrix * vec3(a_coords, 1)).xy, 0, 1);
+ }
 </script>
 
 <script id="fragment-shader-2d" type="x-shader/x-fragment">
@@ -48,10 +42,10 @@
   void main() {
     gl_FragColor = u_color;
   }
-
 </script>
 
-<script src="assignment3.js"></script>
+<script src="assignment4.js"></script>
+<script src="m3.js" type="application/javascript"></script>
 
 
 </body>

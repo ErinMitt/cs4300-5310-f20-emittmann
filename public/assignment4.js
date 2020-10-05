@@ -1,49 +1,43 @@
 const RED_HEX = "#FF0000"
 const RED_RGB = webglUtils.hexToRgb(RED_HEX)
+const GREEN_HEX = "#00FF00"
+const GREEN_RGB = webglUtils.hexToRgb(GREEN_HEX)
+const BLUE_HEX = "#0000ff"
+const BLUE_RGB = webglUtils.hexToRgb(BLUE_HEX)
 const RECTANGLE = "RECTANGLE"
 const TRIANGLE = "TRIANGLE"
 const CIRCLE = "CIRCLE"
 
+const origin = {x: 0, y: 0}
+const sizeOne = {width: 1, height: 1}
 let shapes = [
   {
     type: RECTANGLE,
-    position: {
-      x: 200,
-      y: 100
-    },
-    dimensions: {
-      width: 50,
-      height: 50
-    },
-    color: {
-      red: Math.random(),
-      green: Math.random(),
-      blue: Math.random()
-    }
+    position: origin,
+    dimensions: sizeOne,
+    color: BLUE_RGB,
+    translation: {x: 200, y: 100},
+    rotation: {z: 0},
+    scale: {x: 50, y: 50}
   },
-  {//test123
+ 
+  {
     type: TRIANGLE,
-    position: {
-      x: 300,
-      y: 100
-    },
-    dimensions: {
-      width: 50,
-      height: 50
-    },
-    color: RED_RGB
+    position: origin,
+    dimensions: sizeOne,
+    color: RED_RGB,
+    translation: {x: 300,y: 100},
+    rotation: {z: 0},
+    scale: {x: 50, y: 50}
   },
   {
     type: CIRCLE,
-    position: {
-      x: 100,
-      y: 100
-    },
-    dimensions: {
-      width: 50,
-      height: 50
-    },
-    color: RED_RGB
+    position: origin,
+    dimensions: sizeOne,
+    color: RED_RGB,
+    translation: {x: 300,y: 100},
+    rotation: {z: 0},
+    scale: {x: 50, y: 50}
   }
 ]
 
@@ -137,6 +131,7 @@ const addCircle = (center) => {
 
 let gl
 let attributeCoords
+let uniformMatrix
 let uniformColor
 let bufferCoords
 
@@ -179,6 +174,7 @@ const init = () => {
 
   // get reference to GLSL attributes and uniforms
   attributeCoords = gl.getAttribLocation(program, "a_coords");
+  uniformMatrix = gl.getUniformLocation(program, "u_matrix");
   const uniformResolution = gl.getUniformLocation(program, "u_resolution");
   uniformColor = gl.getUniformLocation(program, "u_color");
 
@@ -210,6 +206,15 @@ const render = () => {
       shape.color.red,
       shape.color.green,
       shape.color.blue, 1);
+
+    // compute transformation matrix
+      let matrix = m3.projection(gl.canvas.clientWidth, gl.canvas.clientHeight);
+      matrix = m3.translate(matrix, shape.translation.x, shape.translation.y);
+      matrix = m3.rotate(matrix, shape.rotation.z);
+      matrix = m3.scale(matrix, shape.scale.x, shape.scale.y);
+  
+      // apply transformation matrix.
+      gl.uniformMatrix3fv(uniformMatrix, false, matrix);
 
     if(shape.type === RECTANGLE) {
       renderRectangle(shape)
