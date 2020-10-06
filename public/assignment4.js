@@ -84,10 +84,10 @@ const doMouseDown = (event) => {
   const x = event.clientX - boundingRectangle.left
   const y = event.clientY - boundingRectangle.top
   const translation = {x, y}
+  const shape = document.querySelector("input[name='shape']:checked").value
   console.log(x, y)
   addShape(translation, shape)
 
-  const shape = document.querySelector("input[name='shape']:checked").value
   console.log(shape)
 
   const center = {
@@ -118,7 +118,7 @@ const init = () => {
    
      document.getElementById("color").onchange = event => updateColor(event)
   const canvas = document.querySelector("#canvas");
-  gl = canvas.getContext("webgl-utils");
+  gl = canvas.getContext("webgl");
 
  canvas.addEventListener(
     "mousedown",
