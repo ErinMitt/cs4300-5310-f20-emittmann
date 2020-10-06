@@ -86,7 +86,7 @@ const doMouseDown = (event) => {
   const translation = {x, y}
   const shape = document.querySelector("input[name='shape']:checked").value
   console.log(x, y)
-  addShape(translation, shape)
+  addShape(translation, shape)//test
 
   console.log(shape)
 
