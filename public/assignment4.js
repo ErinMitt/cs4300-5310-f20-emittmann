@@ -7,6 +7,7 @@ const BLUE_RGB = webglUtils.hexToRgb(BLUE_HEX)
 const RECTANGLE = "RECTANGLE"
 const TRIANGLE = "TRIANGLE"
 const CIRCLE = "CIRCLE"
+const STAR = "STAR"
 
 const origin = {x: 0, y: 0}
 const sizeOne = {width: 1, height: 1}
@@ -20,7 +21,6 @@ let shapes = [
     rotation: {z: 0},
     scale: {x: 50, y: 50}
   },
- 
   {
     type: TRIANGLE,
     position: origin,
@@ -35,99 +35,42 @@ let shapes = [
     position: origin,
     dimensions: sizeOne,
     color: RED_RGB,
-    translation: {x: 300,y: 100},
+    translation: {x: 100,y: 100},
+    rotation: {z: 0},
+    scale: {x: 50, y: 50}
+  },
+  {
+    type: STAR,
+    position: origin,
+    dimensions: sizeOne,
+    color: RED_RGB,
+    translation: {x: 400,y: 100},
     rotation: {z: 0},
     scale: {x: 50, y: 50}
   }
 ]
 
-const addTriangle = (center) => {
-  let x = parseInt(document.getElementById("x").value)
-  let y = parseInt(document.getElementById("y").value)
-  const colorHex = document.getElementById("color").value
-  const colorRgb = webglUtils.hexToRgb(colorHex)
-  const width = parseInt(document.getElementById("width").value)
-  const height = parseInt(document.getElementById("height").value)
-  if (center) {
-    x = center.position.x
-    y = center.position.y
-  }
-  const triangle = {
-    type: TRIANGLE,
-    position: {x, y},
-    dimensions: {width, height},
-    color: colorRgb
-  }
-  shapes.push(triangle)
-  render()
-}
-
-const addRectangle = (center) => {
-  let x = parseInt(document.getElementById("x").value)
-  let y = parseInt(document.getElementById("y").value)
-  const width = parseInt(document.getElementById("width").value)
-  const height = parseInt(document.getElementById("height").value)
-
-  const hex = document.getElementById("color").value
-  console.log(hex)
-  const rgb = webglUtils.hexToRgb(hex)
-  console.log(rgb)
-
-
-  if(center) {
-    x = center.position.x
-    y = center.position.y
-  }
-
-  const rectangle = {
-    type: RECTANGLE,
-    position: {
-      "x": x,
-      y: y
-    },
-    dimensions: {
-      width,
-      height
-    },
-    color: rgb
-  }
-
-  shapes.push(rectangle)
-  render()
-}
-const addCircle = (center) => {
-    let x = parseInt(document.getElementById("x").value)
-    let y = parseInt(document.getElementById("y").value)
-    const width = parseInt(document.getElementById("width").value)
-    const height = parseInt(document.getElementById("height").value)
-  
-    const hex = document.getElementById("color").value
-    console.log(hex)
-    const rgb = webglUtils.hexToRgb(hex)
-    console.log(rgb)
-  
-  
-    if(center) {
-      x = center.position.x
-      y = center.position.y
+const addShape = (translation, type) => {
+    const colorHex = document.getElementById("color").value
+    const colorRgb = webglUtils.hexToRgb(colorHex)
+    let tx = 0
+    let ty = 0
+    if (translation) {
+      tx = translation.x
+      ty = translation.y
     }
-  
-    const circle = {
-      type: CIRCLE,
-      position: {
-        "x": x,
-        y: y
-      },
-      dimensions: {
-        width,
-        height
-      },
-      color: rgb
+    const shape = {
+      type: type,
+      position: origin,
+      dimensions: sizeOne,
+      color: colorRgb,
+      translation: {x: tx, y: ty, z: 0},
+      rotation: {x: 0, y: 0, z: 0},
+      scale: {x: 20, y: 20, z: 20}
     }
-  
-    shapes.push(circle)
+    shapes.push(shape)
     render()
-  }
+   }   
 
 let gl
 let attributeCoords
@@ -140,7 +83,9 @@ const doMouseDown = (event) => {
   // console.log(boundingRectangle)
   const x = event.clientX - boundingRectangle.left
   const y = event.clientY - boundingRectangle.top
+  const translation = {x, y}
   console.log(x, y)
+  addShape(translation, shape)
 
   const shape = document.querySelector("input[name='shape']:checked").value
   console.log(shape)
@@ -155,16 +100,27 @@ const doMouseDown = (event) => {
     addTriangle(center)
   } else if(shape === "CIRCLE") {
     addCircle(center)
+  } else if(shape === "STAR") {
+    addStar(center)
   }
 
 }
 
 const init = () => {
-
+  selectShape(0)
+    document.getElementById("tx").onchange = event => updateTranslation(event, "x")
+    document.getElementById("ty").onchange = event => updateTranslation(event, "y")
+   
+     document.getElementById("sx").onchange = event => updateScale(event, "x")
+     document.getElementById("sy").onchange = event => updateScale(event, "y")
+   
+     document.getElementById("rz").onchange = event => updateRotation(event, "z")
+   
+     document.getElementById("color").onchange = event => updateColor(event)
   const canvas = document.querySelector("#canvas");
   gl = canvas.getContext("webgl-utils");
 
-  canvas.addEventListener(
+ canvas.addEventListener(
     "mousedown",
     doMouseDown,
     false);
@@ -189,8 +145,40 @@ const init = () => {
   gl.clearColor(0, 0, 0, 0);
   gl.clear(gl.COLOR_BUFFER_BIT);
 }
+let selectedShapeIndex = 0
+
+const updateTranslation = (event, axis) => {
+ const value = event.target.value
+ shapes[selectedShapeIndex].translation[axis] = value
+ render()
+}
+
+const updateScale = (event, axis) => {
+    const value = event.target.value
+    shapes[selectedShapeIndex].scale[axis] = value
+    render()
+}
+
+const updateRotation = (event, axis) => {
+ const value = event.target.value
+ const angleInDegrees = (360 - value) * Math.PI / 180;
+ shapes[selectedShapeIndex].color[axis] = angleInDegrees
+ render();
+}
+
+const updateColor = (event, hex) => {
+    const value = event.target.value
+    shapes[selectedShapeIndex].color[webglUtils.hexToRgb(hex
+        )] = value
+    render();
+ // TODO: update the color of the shape.
+ // Use webglUtils.hexToRgb to convert hex color to rgb
+}
+
 
 const render = () => {
+
+
   gl.bindBuffer(gl.ARRAY_BUFFER, bufferCoords);
   gl.vertexAttribPointer(
     attributeCoords,
@@ -200,6 +188,37 @@ const render = () => {
     0,           // stride = 0; ==> move forward size * sizeof(type)
     // each iteration to get the next position
     0);          // offset = 0; i.e., start at the beginning of the buffer
+    
+    const $shapeList = $("#object-list")
+    $shapeList.empty()
+    shapes.forEach((shape, index) => {
+   
+      const $li = $(`
+      <li>
+      <label>
+       <input
+        type="radio"
+        id="${shape.type}-${index}"
+        name="shape-index"
+        ${index === selectedShapeIndex ? "checked": ""}
+        onclick="selectShape(${index})"
+        value="${index}"/>
+      </label>
+     </li>
+   
+        <li>
+        <button onclick="deleteShape(${index})">
+        Delete
+      </button>
+          <label>
+            ${shape.type};
+            X: ${shape.translation.x};
+            Y: ${shape.translation.y}
+          </label>
+        </li>
+      `)
+      $shapeList.append($li)
+    })
 
   shapes.forEach(shape => {
     gl.uniform4f(uniformColor,
@@ -223,8 +242,20 @@ const render = () => {
     }
     else if(shape.type === CIRCLE) {
         renderCircle(shape)
+      } else if(shape.type === STAR) {
+        renderStar(shape)
       }
+
+      
   })
+}
+const selectShape = (selectedIndex) => {
+  selectedShapeIndex = selectedIndex
+  document.getElementById("tx").value = shapes[selectedIndex].translation.x
+  document.getElementById("ty").value = shapes[selectedIndex].translation.y
+  // TODO: update the scale and rotation fields
+  const hexColor = webglUtils.rgbToHex(shapes[selectedIndex].color)
+  document.getElementById("color").value = hexColor
 }
 
 const renderTriangle = (triangle) => {
@@ -250,6 +281,10 @@ const renderTriangle = (triangle) => {
   gl.drawArrays(gl.TRIANGLES, 0, 3);
 }
 
+const deleteShape = (shapeIndex) => {
+    shapes.splice(shapeIndex, 1)
+    render()
+   }
 
 const renderRectangle = (rectangle) => {
   const x1 = rectangle.position.x
@@ -314,4 +349,23 @@ const renderCircle = (circle) => {
     ]), gl.STATIC_DRAW);
   
     gl.drawArrays(gl.TRIANGLES, 0, 36);
+  }
+  const renderStar = (star) => {
+    const x0 = star.position.x
+    const y0 = star.position.y
+    const x1 = star.position.x
+      - star.dimensions.width/2;
+    const y1 = star.position.y
+      - star.dimensions.height/2;
+    const x2 = star.position.x
+      + star.dimensions.width/2;
+    const y2 = star.position.y
+      + star.dimensions.height/2;
+  
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+      x1, y1, x2, y1, x1, y2,
+      x1, y2, x2, y1, x2, y2,
+    ]), gl.STATIC_DRAW);
+  
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
   }
