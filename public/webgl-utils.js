@@ -6,9 +6,9 @@ const webglUtils = {
         green: parseInt(parseRgb[2], 16),
         blue:  parseInt(parseRgb[3], 16)
       }
-      rgb.red /= 256
-      rgb.green /= 256
-      rgb.blue /= 256
+      rgb.red /= 255
+      rgb.green /= 255
+      rgb.blue /= 255
       return rgb
     },
     createProgramFromScripts: (gl, vertexShaderElementId, fragmentShaderElementId) => {
@@ -38,9 +38,9 @@ const webglUtils = {
       return hex.length == 1 ? "0" + hex : hex;
      },
      rgbToHex: (rgb) => {
-      const redHex = webglUtils.componentToHex(rgb.red * 256)
-      const greenHex = webglUtils.componentToHex(rgb.green * 256)
-      const blueHex = webglUtils.componentToHex(rgb.blue * 256)
+      const redHex = webglUtils.componentToHex(rgb.red * 255)
+      const greenHex = webglUtils.componentToHex(rgb.green * 255)
+      const blueHex = webglUtils.componentToHex(rgb.blue * 255)
       return `#${redHex}${greenHex}${blueHex}`
      }
     

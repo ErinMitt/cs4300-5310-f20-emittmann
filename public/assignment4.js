@@ -98,7 +98,7 @@ const init = () => {
    
      document.getElementById("rz").onchange = event => updateRotation(event, "z")
    
-     document.getElementById("color").onchange = event => updateColor(event)
+     document.getElementById("color").onchange = event => updateColor(event, "color")
   const canvas = document.querySelector("#canvas");
   gl = canvas.getContext("webgl");
 
@@ -148,10 +148,11 @@ const updateRotation = (event, axis) => {
   render();
 }
 
-const updateColor = (event, hex) => {
-    const value = event.target.value
-    shapes[selectedShapeIndex].color[webglUtils.hexToRgb(hex
-        )] = value
+const updateColor = (event, color) => {
+      //const value = event.target.value
+    const colorHex = document.getElementById("color").value
+    const colorRgb = webglUtils.hexToRgb(colorHex)
+    shapes[selectedShapeIndex].color[color] = colorRgb
     render();
  // TODO: update the color of the shape.
  // Use webglUtils.hexToRgb to convert hex color to rgb
