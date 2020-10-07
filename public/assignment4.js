@@ -142,10 +142,10 @@ const updateScale = (event, axis) => {
 }
 
 const updateRotation = (event, axis) => {
- const value = event.target.value
- const angleInDegrees = (360 - value) * Math.PI / 180;
- shapes[selectedShapeIndex].color[axis] = angleInDegrees
- render();
+  const value = event.target.value
+  const angleInDegrees = (360 - value) * Math.PI / 180;
+  shapes[selectedShapeIndex].rotation[axis] = angleInDegrees
+  render();
 }
 
 const updateColor = (event, hex) => {
