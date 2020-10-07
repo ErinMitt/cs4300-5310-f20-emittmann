@@ -79,21 +79,13 @@ let uniformColor
 let bufferCoords
 
 const doMouseDown = (event) => {
-  const boundingRectangle = canvas.getBoundingClientRect()
-  // console.log(boundingRectangle)
-  const x = event.clientX - boundingRectangle.left
-  const y = event.clientY - boundingRectangle.top
+  const boundingRectangle = canvas.getBoundingClientRect();
+  const x = event.clientX - boundingRectangle.left;
+  const y = event.clientY - boundingRectangle.top;
   const translation = {x, y}
   const shape = document.querySelector("input[name='shape']:checked").value
-  console.log(x, y)
-  addShape(translation, shape)//test
-
-  console.log(shape)
-
-  const center = {
-    position: {x, y}
-  }
-addShape(center)
+ 
+  addShape(translation, shape)
 }
 
 const init = () => {
