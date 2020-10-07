@@ -93,17 +93,7 @@ const doMouseDown = (event) => {
   const center = {
     position: {x, y}
   }
-
-  if(shape === "RECTANGLE") {
-    addRectangle(center)
-  } else if(shape === "TRIANGLE") {
-    addTriangle(center)
-  } else if(shape === "CIRCLE") {
-    addCircle(center)
-  } else if(shape === "STAR") {
-    addStar(center)
-  }
-
+addShape(center)
 }
 
 const init = () => {
