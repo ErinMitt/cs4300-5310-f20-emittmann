@@ -148,11 +148,11 @@ const updateRotation = (event, axis) => {
   render();
 }
 
-const updateColor = (event, color) => {
+const updateColor = (event) => {
       //const value = event.target.value
     const colorHex = document.getElementById("color").value
     const colorRgb = webglUtils.hexToRgb(colorHex)
-    shapes[selectedShapeIndex].color[color] = colorRgb
+    shapes[selectedShapeIndex].color = colorRgb
     render();
  // TODO: update the color of the shape.
  // Use webglUtils.hexToRgb to convert hex color to rgb
