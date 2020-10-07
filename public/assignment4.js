@@ -195,6 +195,9 @@ const render = () => {
    
       const $li = $(`
       <li>
+      <button onclick="deleteShape(${index})">
+      Delete
+    </button>
       <label>
        <input
         type="radio"
@@ -204,12 +207,6 @@ const render = () => {
         onclick="selectShape(${index})"
         value="${index}"/>
       </label>
-     </li>
-   
-        <li>
-        <button onclick="deleteShape(${index})">
-        Delete
-      </button>
           <label>
             ${shape.type};
             X: ${shape.translation.x};
@@ -351,20 +348,24 @@ const renderCircle = (circle) => {
     gl.drawArrays(gl.TRIANGLES, 0, 36);
   }
   const renderStar = (star) => {
-    const x0 = star.position.x
-    const y0 = star.position.y
+    const x0 = star.position.x;
+    const y0 = star.position.y;
     const x1 = star.position.x
-      - star.dimensions.width/2;
+      - Math.sqrt(3)*star.dimensions.width/4;
     const y1 = star.position.y
       - star.dimensions.height/2;
     const x2 = star.position.x
-      + star.dimensions.width/2;
+      + Math.sqrt(3)*star.dimensions.width/4;
     const y2 = star.position.y
       + star.dimensions.height/2;
+      const y3 = star.position.y
+      - star.dimensions.height/4;
+      const y4 = star.position.y
+      + star.dimensions.height/4;
   
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-      x1, y1, x2, y1, x1, y2,
-      x1, y2, x2, y1, x2, y2,
+      x1, y4, x0, y1, x2, y4,
+      x1, y3, x0, y2, x2, y3,
     ]), gl.STATIC_DRAW);
   
     gl.drawArrays(gl.TRIANGLES, 0, 6);
