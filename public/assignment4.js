@@ -66,7 +66,7 @@ const addShape = (translation, type) => {
       color: colorRgb,
       translation: {x: tx, y: ty, z: 0},
       rotation: {x: 0, y: 0, z: 0},
-      scale: {x: 20, y: 20, z: 20}
+      scale: {x: 50, y: 50, z: 50}
     }
     shapes.push(shape)
     render()
