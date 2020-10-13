@@ -61,28 +61,30 @@ let shapes = [
 
 ]
 
-const addShape = (translation, type) => {
-    const colorHex = document.getElementById("color").value
-    const colorRgb = webglUtils.hexToRgb(colorHex)
-    let tx = 0
-    let ty = 0
-    if (translation) {
-      tx = translation.x
-      ty = translation.y
-      
-    }
-    const shape = {
-      type: type,
-      position: origin,
-      dimensions: sizeOne,
-      color: colorRgb,
-      translation: {x: tx, y: ty, z: 0},
-      rotation: {x: 0, y: 0, z: 0},
-      scale: {x: 50, y: 50, z: 50}
-    }
-    shapes.push(shape)
-    render()
-   }   
+
+const addShape = (newShape, type) => {
+  const colorHex = document.getElementById("color").value
+  const colorRgb = webglUtils.hexToRgb(colorHex)
+  let tx = 0
+  let ty = 0
+  let tz = 0
+
+  let shape = {
+    type: type,
+    position: origin,
+    dimensions: sizeOne,
+    color: colorRgb,
+    translation: {x: tx, y: ty, z: tz},
+    rotation: {x: 0, y: 0, z: 0},
+    scale: {x: 20, y: 20, z: 20}
+  }
+  if (newShape) {
+    Object.assign(shape, newShape)
+  }
+  shapes.push(shape)
+  render()
+ }
+   
 
 let gl
 let attributeCoords
@@ -92,26 +94,41 @@ let bufferCoords
 
 const doMouseDown = (event) => {
   const boundingRectangle = canvas.getBoundingClientRect();
-  const x = event.clientX - boundingRectangle.left;
-  const y = event.clientY - boundingRectangle.top;
-  const translation = {x, y}
-  const shape = document.querySelector("input[name='shape']:checked").value
+  const x =  Math.round(event.clientX
+              - boundingRectangle.left
+              - boundingRectangle.width/2);
+  const y = -Math.round(event.clientY
+              - boundingRectangle.top
+              - boundingRectangle.height/2);
+  const translation = {x, y, z: -150}
+  const rotation = {x: 0, y: 0, z: 180}
+  const shapeType = document.querySelector("input[name='shape']:checked").value
+  const shape = {
+    translation, rotation, type: shapeType
+  }
+  addShape(shape, shapeType)
+ }
  
-  addShape(translation, shape)
-}
 
 const init = () => {
   selectShape(0)
-    document.getElementById("tx").onchange = event => updateTranslation(event, "x")
-    document.getElementById("ty").onchange = event => updateTranslation(event, "y")
-   
-     document.getElementById("sx").onchange = event => updateScale(event, "x")
-     document.getElementById("sy").onchange = event => updateScale(event, "y")
-   
-     document.getElementById("rz").onchange = event => updateRotation(event, "z")
-   
-     document.getElementById("color").onchange = event => updateColor(event, "color")
-  const canvas = document.querySelector("#canvas");
+  document.getElementById("tx").onchange = event => updateTranslation(event, "x")
+  document.getElementById("ty").onchange = event => updateTranslation(event, "y")
+  document.getElementById("tz").onchange = event => updateTranslation(event, "z")
+ 
+  document.getElementById("sx").onchange = event => updateScale(event, "x")
+  document.getElementById("sy").onchange = event => updateScale(event, "y")
+  document.getElementById("sz").onchange = event => updateScale(event, "z")
+ 
+  document.getElementById("rx").onchange = event => updateRotation(event, "x")
+  document.getElementById("ry").onchange = event => updateRotation(event, "y")
+  document.getElementById("rz").onchange = event => updateRotation(event, "z")
+ 
+  document.getElementById("fv").onchange = event => updateFieldOfView(event)
+ 
+  document.getElementById("color").onchange = event => updateColor(event)
+
+  const canvas = document.querySelector("#canvas");//check if should still be here
   gl = canvas.getContext("webgl");
 
  canvas.addEventListener(
@@ -153,12 +170,16 @@ const updateScale = (event, axis) => {
     render()
 }
 
-const updateRotation = (event, axis) => {
-  const value = event.target.value
-  const angleInDegrees = (360 - value) * Math.PI / 180;
-  shapes[selectedShapeIndex].rotation[axis] = angleInDegrees
+const updateFieldOfView = (event) => {
+  fieldOfViewRadians = m4.degToRad(event.target.value);
   render();
-}
+ }
+ 
+ const updateRotation = (event, axis) => {
+  shapes[selectedShapeIndex].rotation[axis] = event.target.value
+  render();
+ }
+ 
 
 const updateColor = (event) => {
       //const value = event.target.value
@@ -237,35 +258,37 @@ const render = () => {
       M = m4.scale(M, shape.scale.x, shape.scale.y, shape.scale.z)
       return M
     }
-    
-      // apply transformation matrix.
       let M = computeModelViewMatrix(gl.canvas, shape, aspect, zNear, zFar)
-      gl.uniformMatrix4fv(uniformMatrix, false, M);
-
+      gl.uniformMatrix4fv(uniformMatrix, false, M)
       if (shape.type === CUBE) {
         renderCube(shape)
-      } else if(shape.type === RECTANGLE) {
-      renderRectangle(shape)
-    } else if(shape.type === TRIANGLE) {
-      renderTriangle(shape)
-    } /* else if(shape.type === CIRCLE) {
-        renderCircle(shape)
-      } else if(shape.type === STAR) {
-        renderStar(shape)
-      }*/
+      } else if (shape.type === RECTANGLE) {
+        renderRectangle(shape)
+      } else if (shape.type === TRIANGLE) {
+        renderTriangle(shape)
+      }
+    })
 
-      
-  })
-}
-const selectShape = (selectedIndex) => {
-  selectedShapeIndex = selectedIndex
-  document.getElementById("tx").value = shapes[selectedIndex].translation.x
-  document.getElementById("ty").value = shapes[selectedIndex].translation.y
-  // TODO: update the scale and rotation fields
-  const hexColor = webglUtils.rgbToHex(shapes[selectedIndex].color)
-  document.getElementById("color").value = hexColor
-}
-
+  const selectShape = (selectedIndex) => {
+    selectedShapeIndex = selectedIndex
+    document.getElementById("tx").value = shapes[selectedIndex].translation.x
+    document.getElementById("ty").value = shapes[selectedIndex].translation.y
+    document.getElementById("tz").value = shapes[selectedIndex].translation.z
+    document.getElementById("sx").value = shapes[selectedIndex].scale.x
+    document.getElementById("sy").value = shapes[selectedIndex].scale.y
+    document.getElementById("sz").value = shapes[selectedIndex].scale.z
+    document.getElementById("rx").value = shapes[selectedIndex].rotation.x
+    document.getElementById("ry").value = shapes[selectedIndex].rotation.y
+    document.getElementById("rz").value = shapes[selectedIndex].rotation.z
+    document.getElementById("fv").value = m4.radToDeg(fieldOfViewRadians)
+    const hexColor = webglUtils.rgbToHex(shapes[selectedIndex].color)
+    document.getElementById("color").value = hexColor
+   }
+   
+const deleteShape = (shapeIndex) => {
+  shapes.splice(shapeIndex, 1)
+  render()
+ }
 const renderTriangle = (triangle) => {
   const x1 = triangle.position.x
     - triangle.dimensions.width / 2
@@ -280,7 +303,7 @@ const renderTriangle = (triangle) => {
     - triangle.dimensions.height / 2
 
   const float32Array = new Float32Array([
-    x1, y1,   x2, y2,   x3, y3
+    x1, y1, 0, x3, y3, 0, x2, y2, 0,
   ])
 
   gl.bufferData(gl.ARRAY_BUFFER,
@@ -289,10 +312,6 @@ const renderTriangle = (triangle) => {
   gl.drawArrays(gl.TRIANGLES, 0, 3);
 }
 
-const deleteShape = (shapeIndex) => {
-    shapes.splice(shapeIndex, 1)
-    render()
-   }
    const renderCube = (cube) => {
     const geometry = [
        0,  0,  0,    0, 30,  0,   30,  0,  0,
@@ -330,6 +349,7 @@ const renderRectangle = (rectangle) => {
   ]), gl.STATIC_DRAW);
 
   gl.drawArrays(gl.TRIANGLES, 0, 6);
+}
 }
 /*const renderCircle = (circle) => {
     const x0 = circle.position.x;
