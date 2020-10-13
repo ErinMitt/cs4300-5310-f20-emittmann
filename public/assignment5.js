@@ -18,37 +18,37 @@ let shapes = [
     position: origin,
     dimensions: sizeOne,
     color: BLUE_RGB,
-    translation: {x: 200, y: 100, z: -20},
+    translation: {x: -15, y: 0, z: -20},
     rotation: {x:0, y:0, z: 0},
-    scale: {x: 50, y: 50, z: 50}
+    scale: {x: 10, y: 10, z: 10}
   },
   {
     type: TRIANGLE,
     position: origin,
     dimensions: sizeOne,
     color: RED_RGB,
-    translation: {x: 300,y: 100, z: -20},
-    rotation: {x: 0, y: 0, z: 0},
-    scale: {x: 50, y: 50, z: 180}
+    translation: {x: 15,y: 0, z: -20},
+    rotation: {x: 0, y: 0, z: 180},
+    scale: {x: 10, y: 10, z: 10}
   },
-  {
+  /*{
     type: CIRCLE,
     position: origin,
     dimensions: sizeOne,
     color: RED_RGB,
-    translation: {x: 100,y: 100},
-    rotation: {z: 0},
-    scale: {x: 50, y: 50}
+    translation: {x: 100,y: 100, z: -20},
+    rotation: {x:0, y:0, z: 0},
+    scale: {x: 50, y: 50, z:0}
   },
   {
     type: STAR,
     position: origin,
     dimensions: sizeOne,
     color: RED_RGB,
-    translation: {x: 400,y: 100},
-    rotation: {z: 0},
-    scale: {x: 50, y: 50}
-  },
+    translation: {x: 400,y: 100, z:-10},
+    rotation: {x:0, y:0, z: 0},
+    scale: {x: 50, y: 50, z:0}
+  },*/
   {
     type: CUBE,
     position: origin,
@@ -69,6 +69,7 @@ const addShape = (translation, type) => {
     if (translation) {
       tx = translation.x
       ty = translation.y
+      
     }
     const shape = {
       type: type,
@@ -247,11 +248,11 @@ const render = () => {
       renderRectangle(shape)
     } else if(shape.type === TRIANGLE) {
       renderTriangle(shape)
-    }  else if(shape.type === CIRCLE) {
+    } /* else if(shape.type === CIRCLE) {
         renderCircle(shape)
       } else if(shape.type === STAR) {
         renderStar(shape)
-      }
+      }*/
 
       
   })
@@ -330,7 +331,7 @@ const renderRectangle = (rectangle) => {
 
   gl.drawArrays(gl.TRIANGLES, 0, 6);
 }
-const renderCircle = (circle) => {
+/*const renderCircle = (circle) => {
     const x0 = circle.position.x;
     const y0 = circle.position.y;
     const x1 = circle.position.x
@@ -399,4 +400,4 @@ const renderCircle = (circle) => {
     ]), gl.STATIC_DRAW);
   
     gl.drawArrays(gl.TRIANGLES, 0, 6);
-  }
+  }*/
