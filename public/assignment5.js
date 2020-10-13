@@ -173,7 +173,7 @@ const updateScale = (event, axis) => {
 const updateFieldOfView = (event) => {
   fieldOfViewRadians = m4.degToRad(event.target.value);
   render();
- }
+}
  
  const updateRotation = (event, axis) => {
   shapes[selectedShapeIndex].rotation[axis] = event.target.value
@@ -240,7 +240,7 @@ const render = () => {
       `)
       $shapeList.append($li)
     })
-
+ 
   shapes.forEach(shape => {
     gl.uniform4f(uniformColor,
       shape.color.red,
@@ -258,17 +258,17 @@ const render = () => {
       M = m4.scale(M, shape.scale.x, shape.scale.y, shape.scale.z)
       return M
     }
-      let M = computeModelViewMatrix(gl.canvas, shape, aspect, zNear, zFar)
-      gl.uniformMatrix4fv(uniformMatrix, false, M)
-      if (shape.type === CUBE) {
-        renderCube(shape)
-      } else if (shape.type === RECTANGLE) {
-        renderRectangle(shape)
-      } else if (shape.type === TRIANGLE) {
-        renderTriangle(shape)
-      }
+    let M = computeModelViewMatrix(gl.canvas, shape, aspect, zNear, zFar)
+    gl.uniformMatrix4fv(uniformMatrix, false, M)
+    if (shape.type === CUBE) {
+      renderCube(shape)
+    } else if (shape.type === RECTANGLE) {
+      renderRectangle(shape)
+    } else if (shape.type === TRIANGLE) {
+      renderTriangle(shape)
+    }
     })
-
+}
   const selectShape = (selectedIndex) => {
     selectedShapeIndex = selectedIndex
     document.getElementById("tx").value = shapes[selectedIndex].translation.x
@@ -280,15 +280,11 @@ const render = () => {
     document.getElementById("rx").value = shapes[selectedIndex].rotation.x
     document.getElementById("ry").value = shapes[selectedIndex].rotation.y
     document.getElementById("rz").value = shapes[selectedIndex].rotation.z
-    document.getElementById("fv").value = m4.radToDeg(fieldOfViewRadians)
+    //document.getElementById("fv").value = m4.radToDeg(fieldOfViewRadians)
     const hexColor = webglUtils.rgbToHex(shapes[selectedIndex].color)
     document.getElementById("color").value = hexColor
    }
    
-const deleteShape = (shapeIndex) => {
-  shapes.splice(shapeIndex, 1)
-  render()
- }
 const renderTriangle = (triangle) => {
   const x1 = triangle.position.x
     - triangle.dimensions.width / 2
@@ -332,7 +328,10 @@ const renderTriangle = (triangle) => {
     var primitiveType = gl.TRIANGLES;
     gl.drawArrays(gl.TRIANGLES, 0, 6 * 6);
   }
-  
+  const deleteShape = (shapeIndex) => {
+    shapes.splice(shapeIndex, 1)
+    render()
+   }
 const renderRectangle = (rectangle) => {
   const x1 = rectangle.position.x
     - rectangle.dimensions.width/2;
@@ -349,7 +348,6 @@ const renderRectangle = (rectangle) => {
   ]), gl.STATIC_DRAW);
 
   gl.drawArrays(gl.TRIANGLES, 0, 6);
-}
 }
 /*const renderCircle = (circle) => {
     const x0 = circle.position.x;
