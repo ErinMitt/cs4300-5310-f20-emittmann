@@ -128,8 +128,9 @@ const init = () => {
  
   document.getElementById("color").onchange = event => updateColor(event)
 
-  const canvas = document.querySelector("#canvas");//check if should still be here
+  const canvas = document.querySelector("#canvas");
   gl = canvas.getContext("webgl");
+ // m4 = canvas.getContext("m4");
 
  canvas.addEventListener(
     "mousedown",
@@ -240,13 +241,12 @@ const render = () => {
       `)
       $shapeList.append($li)
     })
- 
   shapes.forEach(shape => {
     gl.uniform4f(uniformColor,
       shape.color.red,
       shape.color.green,
       shape.color.blue, 1);
-
+  
     // compute transformation matrix
     let fieldOfViewRadians = m4.degToRad(60)
     const computeModelViewMatrix = (canvas, shape, aspect, zNear, zFar) => {
@@ -280,7 +280,7 @@ const render = () => {
     document.getElementById("rx").value = shapes[selectedIndex].rotation.x
     document.getElementById("ry").value = shapes[selectedIndex].rotation.y
     document.getElementById("rz").value = shapes[selectedIndex].rotation.z
-    //document.getElementById("fv").value = m4.radToDeg(fieldOfViewRadians)
+    document.getElementById("fv").value = m4.radToDeg(fieldOfViewRadians)
     const hexColor = webglUtils.rgbToHex(shapes[selectedIndex].color)
     document.getElementById("color").value = hexColor
    }
