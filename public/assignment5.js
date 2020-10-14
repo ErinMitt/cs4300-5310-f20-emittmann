@@ -107,7 +107,7 @@ const doMouseDown = (event) => {
   };
   addShape(shape, shapeType);
 };
-
+let fieldOfViewRadians = m4.degToRad(60);
 const init = () => {
   selectShape(0);
   document.getElementById("tx").onchange = (event) =>
@@ -252,7 +252,6 @@ const render = () => {
     );
 
     // compute transformation matrix
-    let fieldOfViewRadians = m4.degToRad(60);
     const computeModelViewMatrix = (canvas, shape, aspect, zNear, zFar) => {
       let M = m4.perspective(fieldOfViewRadians, aspect, zNear, zFar);
       M = m4.translate(
