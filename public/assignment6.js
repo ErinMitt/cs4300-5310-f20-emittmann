@@ -9,6 +9,14 @@ const TRIANGLE = "TRIANGLE";
 const CIRCLE = "CIRCLE";
 const STAR = "STAR";
 const origin = { x: 0, y: 0, z: 0 };
+const camera = "CAMERA";
+[
+  {
+  position: origin, 
+  rotation: { x: 0, y: 0, z: 0 },
+  },
+];
+
 const sizeOne = { width: 1, height: 1, depth: 1 };
 const CUBE = "CUBE";
 let shapes = [
@@ -20,6 +28,12 @@ let shapes = [
     translation: { x: -15, y: 0, z: -20 },
     rotation: { x: 0, y: 0, z: 0 },
     scale: { x: 10, y: 10, z: 10 },
+  },
+  {
+    type: camera,
+    position: origin,
+    translation: { x: 0, y: 0, z: 0 },
+    rotation: { x: 0, y: 0, z: 0 },
   },
   {
     type: TRIANGLE,
@@ -112,16 +126,6 @@ let target = [0, 0, 0]
 let lookAt = true
 const init = () => {
   selectShape(0);
-  selectedShapeIndex = selectedIndex;
-  document.getElementById("tx").value = shapes[selectedIndex].translation.x;
-  document.getElementById("ty").value = shapes[selectedIndex].translation.y;
-  document.getElementById("tz").value = shapes[selectedIndex].translation.z;
-  document.getElementById("sx").value = shapes[selectedIndex].scale.x;
-  document.getElementById("sy").value = shapes[selectedIndex].scale.y;
-  document.getElementById("sz").value = shapes[selectedIndex].scale.z;
-  document.getElementById("rx").value = shapes[selectedIndex].rotation.x;
-  document.getElementById("ry").value = shapes[selectedIndex].rotation.y;
-  document.getElementById("rz").value = shapes[selectedIndex].rotation.z;
   document.getElementById("fv").value = m4.radToDeg(fieldOfViewRadians);
   document.getElementById("lookAt").onchange = event => webglUtils.toggleLookAt(event);
   document.getElementById("ctx").onchange = event => webglUtils.updateCameraTranslation(event, "x");
@@ -321,6 +325,7 @@ const render = () => {
     } else if (shape.type === TRIANGLE) {
       renderTriangle(shape);
     }
+    
   });
 };
 const selectShape = (selectedIndex) => {
