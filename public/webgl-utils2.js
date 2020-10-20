@@ -149,6 +149,13 @@ updateCameraRotation: (event, axis) => {
     document.getElementById("fv").value = m4.radToDeg(fieldOfViewRadians)
     const hexColor = webglUtils.rgbToHex(shapes[selectedIndex].color)
     document.getElementById("color").value = hexColor
+    document.getElementById("lookAt").checked = lookAt
+    document.getElementById("ctx").value = camera.translation.x
+    document.getElementById("cty").value = camera.translation.y
+    document.getElementById("ctz").value = camera.translation.z
+    document.getElementById("crx").value = camera.rotation.x
+    document.getElementById("cry").value = camera.rotation.y
+    document.getElementById("crz").value = camera.rotation.z
   },
   doMouseDown: (event) => {
     const boundingRectangle = canvas.getBoundingClientRect();

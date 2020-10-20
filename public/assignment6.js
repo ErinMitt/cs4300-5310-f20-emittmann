@@ -8,7 +8,6 @@ const RECTANGLE = "RECTANGLE";
 const TRIANGLE = "TRIANGLE";
 const CIRCLE = "CIRCLE";
 const STAR = "STAR";
-//const camera = { x: 0, y: 0, z: 0 };
 const origin = { x: 0, y: 0, z: 0 };
 const sizeOne = { width: 1, height: 1, depth: 1 };
 const CUBE = "CUBE";
@@ -113,27 +112,28 @@ let target = [0, 0, 0]
 let lookAt = true
 const init = () => {
   selectShape(0);
-
-  document.getElementById("lookAt").onchange = event => webglUtils.toggleLookAt(event)
-  document.getElementById("ctx").onchange = event => webglUtils.updateCameraTranslation(event, "x")
-  document.getElementById("cty").onchange = event => webglUtils.updateCameraTranslation(event, "y")
-  document.getElementById("ctz").onchange = event => webglUtils.updateCameraTranslation(event, "z")
-  document.getElementById("crx").onchange = event => webglUtils.updateCameraRotation(event, "x")
-  document.getElementById("cry").onchange = event => webglUtils.updateCameraRotation(event, "y")
-  document.getElementById("crz").onchange = event => webglUtils.updateCameraRotation(event, "z")
-  document.getElementById("ltx").onchange = event => webglUtils.updateLookAtTranslation(event, 0)
-  document.getElementById("lty").onchange = event => webglUtils.updateLookAtTranslation(event, 1)
-  document.getElementById("ltz").onchange = event => webglUtils.updateLookAtTranslation(event, 2)
-  
-  document.getElementById("lookAt").checked = lookAt
-  document.getElementById("ctx").value = camera.translation.x
-  document.getElementById("cty").value = camera.translation.y
-  document.getElementById("ctz").value = camera.translation.z
-  document.getElementById("crx").value = camera.rotation.x
-  document.getElementById("cry").value = camera.rotation.y
-  document.getElementById("crz").value = camera.rotation.z
-  
-
+  selectedShapeIndex = selectedIndex;
+  document.getElementById("tx").value = shapes[selectedIndex].translation.x;
+  document.getElementById("ty").value = shapes[selectedIndex].translation.y;
+  document.getElementById("tz").value = shapes[selectedIndex].translation.z;
+  document.getElementById("sx").value = shapes[selectedIndex].scale.x;
+  document.getElementById("sy").value = shapes[selectedIndex].scale.y;
+  document.getElementById("sz").value = shapes[selectedIndex].scale.z;
+  document.getElementById("rx").value = shapes[selectedIndex].rotation.x;
+  document.getElementById("ry").value = shapes[selectedIndex].rotation.y;
+  document.getElementById("rz").value = shapes[selectedIndex].rotation.z;
+  document.getElementById("fv").value = m4.radToDeg(fieldOfViewRadians);
+  document.getElementById("lookAt").onchange = event => webglUtils.toggleLookAt(event);
+  document.getElementById("ctx").onchange = event => webglUtils.updateCameraTranslation(event, "x");
+  document.getElementById("cty").onchange = event => webglUtils.updateCameraTranslation(event, "y");
+  document.getElementById("ctz").onchange = event => webglUtils.updateCameraTranslation(event, "z");
+  document.getElementById("crx").onchange = event => webglUtils.updateCameraRotation(event, "x");
+  document.getElementById("cry").onchange = event => webglUtils.updateCameraRotation(event, "y");
+  document.getElementById("crz").onchange = event => webglUtils.updateCameraRotation(event, "z");
+  document.getElementById("ltx").onchange = event => webglUtils.updateLookAtTranslation(event, 0);
+  document.getElementById("lty").onchange = event => webglUtils.updateLookAtTranslation(event, 1);
+  document.getElementById("ltz").onchange = event => webglUtils.updateLookAtTranslation(event, 2);
+   
   document.getElementById("fv").onchange = (event) => updateFieldOfView(event);
 
   document.getElementById("color").onchange = (event) => updateColor(event);
