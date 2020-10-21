@@ -206,7 +206,20 @@ const updateColor = (event) => {
   // TODO: update the color of the shape.
   // Use webglUtils.hexToRgb to convert hex color to rgb
 };
-
+// compute transformation matrix
+const computeModelViewMatrix = (shape, viewProjectionMatrix) => {
+  let M = m4.translate(
+    viewProjectionMatrix,
+    camera.translation.x,
+    camera.translation.y,
+    camera.translation.z
+  );
+  M = m4.xRotate(M, m4.degToRad(shape.rotation.x));
+  M = m4.yRotate(M, m4.degToRad(shape.rotation.y));
+  M = m4.zRotate(M, m4.degToRad(shape.rotation.z));
+  M = m4.scale(M, shape.scale.x, shape.scale.y, shape.scale.z);
+  return M;
+};
 const render = () => {
   gl.bindBuffer(gl.ARRAY_BUFFER, bufferCoords);
   gl.vertexAttribPointer(
@@ -226,8 +239,8 @@ const render = () => {
   const zFar = 2000;
 
   gl.bindBuffer(gl.ARRAY_BUFFER, bufferCoords);
+  let cameraMatrix = m4.identity();
   if (lookAt) {
-    let cameraMatrix = m4.identity();
     cameraMatrix = m4.translate(
       cameraMatrix,
       camera.translation.x,
@@ -241,13 +254,7 @@ const render = () => {
     ];
     cameraMatrix = m4.lookAt(cameraPosition, target, up);
     cameraMatrix = m4.inverse(cameraMatrix);
-    const projectionMatrix = m4.perspective(
-      fieldOfViewRadians,
-      aspect,
-      zNear,
-      zFar
-    );
-    const viewProjectionMatrix = m4.multiply(projectionMatrix, cameraMatrix);
+
   } else {
     cameraMatrix = m4.zRotate(cameraMatrix, m4.degToRad(camera.rotation.z));
     cameraMatrix = m4.xRotate(cameraMatrix, m4.degToRad(camera.rotation.x));
@@ -259,26 +266,18 @@ const render = () => {
       camera.translation.z
     );
   }
+  const projectionMatrix = m4.perspective(
+    fieldOfViewRadians,
+    aspect,
+    zNear,
+    zFar
+  );
 
-  // compute transformation matrix
-  const computeModelViewMatrix = (shape, viewProjectionMatrix) => {
-    M = m4.translate(
-      viewProjectionMatrix,
-      camera.translation.x,
-      camera.translation.y,
-      camera.translation.z
-    );
-    M = m4.xRotate(M, m4.degToRad(shape.rotation.x));
-    M = m4.yRotate(M, m4.degToRad(shape.rotation.y));
-    M = m4.zRotate(M, m4.degToRad(shape.rotation.z));
-    M = m4.scale(M, shape.scale.x, shape.scale.y, shape.scale.z);
-    return M;
-  };
+  const viewProjectionMatrix = m4.multiply(projectionMatrix, cameraMatrix);
 
   const $shapeList = $("#object-list");
   $shapeList.empty();
   shapes.forEach((shape, index) => {
-    let M = computeModelViewMatrix(shape, viewProjectionMatrix);
     const $li = $(`
       <li>
       <button onclick="deleteShape(${index})">
@@ -302,7 +301,6 @@ const render = () => {
       `);
     $shapeList.append($li);
   });
-
   shapes.forEach((shape) => {
     gl.uniform4f(
       uniformColor,
@@ -311,7 +309,8 @@ const render = () => {
       shape.color.blue,
       1
     );
-
+    console.log(shape);
+    const M = computeModelViewMatrix(shape, viewProjectionMatrix);
     gl.uniformMatrix4fv(uniformMatrix, false, M);
     if (shape.type === CUBE) {
       renderCube(shape);
