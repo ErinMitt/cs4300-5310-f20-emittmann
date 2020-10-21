@@ -10,8 +10,8 @@ const CIRCLE = "CIRCLE";
 const STAR = "STAR";
 const origin = { x: 0, y: 0, z: 0 };
 var camera = {
-  rotation: {x:0, y:0, z:0},
-translation: {x:0,y:0,z:0}
+  rotation: { x: 0, y: 0, z: 0 },
+  translation: { x: 0, y: 0, z: 0 },
 };
 
 const sizeOne = { width: 1, height: 1, depth: 1 };
@@ -112,23 +112,33 @@ const doMouseDown = (event) => {
   addShape(shape, shapeType);
 };
 let fieldOfViewRadians = m4.degToRad(60);
-const up = [0, 1, 0]
-let target = [0, 0, 0]
-let lookAt = true
+const up = [0, 1, 0];
+let target = [0, 0, 0];
+let lookAt = true;
 const init = () => {
   selectShape(0);
   document.getElementById("fv").value = m4.radToDeg(fieldOfViewRadians);
-  document.getElementById("lookAt").onchange = event => webglUtils.toggleLookAt(event);
-  document.getElementById("ctx").onchange = event => webglUtils.updateCameraTranslation(event, "x");
-  document.getElementById("cty").onchange = event => webglUtils.updateCameraTranslation(event, "y");
-  document.getElementById("ctz").onchange = event => webglUtils.updateCameraTranslation(event, "z");
-  document.getElementById("crx").onchange = event => webglUtils.updateCameraRotation(event, "x");
-  document.getElementById("cry").onchange = event => webglUtils.updateCameraRotation(event, "y");
-  document.getElementById("crz").onchange = event => webglUtils.updateCameraRotation(event, "z");
-  document.getElementById("ltx").onchange = event => webglUtils.updateLookAtTranslation(event, 0);
-  document.getElementById("lty").onchange = event => webglUtils.updateLookAtTranslation(event, 1);
-  document.getElementById("ltz").onchange = event => webglUtils.updateLookAtTranslation(event, 2);
-   
+  document.getElementById("lookAt").onchange = (event) =>
+    webglUtils.toggleLookAt(event);
+  document.getElementById("ctx").onchange = (event) =>
+    webglUtils.updateCameraTranslation(event, "x");
+  document.getElementById("cty").onchange = (event) =>
+    webglUtils.updateCameraTranslation(event, "y");
+  document.getElementById("ctz").onchange = (event) =>
+    webglUtils.updateCameraTranslation(event, "z");
+  document.getElementById("crx").onchange = (event) =>
+    webglUtils.updateCameraRotation(event, "x");
+  document.getElementById("cry").onchange = (event) =>
+    webglUtils.updateCameraRotation(event, "y");
+  document.getElementById("crz").onchange = (event) =>
+    webglUtils.updateCameraRotation(event, "z");
+  document.getElementById("ltx").onchange = (event) =>
+    webglUtils.updateLookAtTranslation(event, 0);
+  document.getElementById("lty").onchange = (event) =>
+    webglUtils.updateLookAtTranslation(event, 1);
+  document.getElementById("ltz").onchange = (event) =>
+    webglUtils.updateLookAtTranslation(event, 2);
+
   document.getElementById("fv").onchange = (event) => updateFieldOfView(event);
 
   document.getElementById("color").onchange = (event) => updateColor(event);
@@ -216,55 +226,54 @@ const render = () => {
   const zFar = 2000;
 
   gl.bindBuffer(gl.ARRAY_BUFFER, bufferCoords);
-  if(lookAt) {
-    let cameraMatrix = m4.identity()
+  if (lookAt) {
+    let cameraMatrix = m4.identity();
     cameraMatrix = m4.translate(
-        cameraMatrix,
-        camera.translation.x,
-        camera.translation.y,
-        camera.translation.z)
-    const cameraPosition = [
-        cameraMatrix[12],
-        cameraMatrix[13],
-        cameraMatrix[14]]
-    cameraMatrix = m4.lookAt(
-        cameraPosition,
-        target,
-        up)
-    cameraMatrix = m4.inverse(cameraMatrix)
-    const projectionMatrix = m4.perspective(
-        fieldOfViewRadians, aspect, zNear, zFar)
-    const viewProjectionMatrix = m4.multiply(
-        projectionMatrix, cameraMatrix)
-} else {
-  cameraMatrix = m4.zRotate(
-      cameraMatrix,
-      m4.degToRad(camera.rotation.z));
-  cameraMatrix = m4.xRotate(
-      cameraMatrix,
-      m4.degToRad(camera.rotation.x));
-  cameraMatrix = m4.yRotate(
-      cameraMatrix,
-      m4.degToRad(camera.rotation.y));
-  cameraMatrix = m4.translate(
       cameraMatrix,
       camera.translation.x,
       camera.translation.y,
-      camera.translation.z);
-}
+      camera.translation.z
+    );
+    const cameraPosition = [
+      cameraMatrix[12],
+      cameraMatrix[13],
+      cameraMatrix[14],
+    ];
+    cameraMatrix = m4.lookAt(cameraPosition, target, up);
+    cameraMatrix = m4.inverse(cameraMatrix);
+    const projectionMatrix = m4.perspective(
+      fieldOfViewRadians,
+      aspect,
+      zNear,
+      zFar
+    );
+    const viewProjectionMatrix = m4.multiply(projectionMatrix, cameraMatrix);
+  } else {
+    cameraMatrix = m4.zRotate(cameraMatrix, m4.degToRad(camera.rotation.z));
+    cameraMatrix = m4.xRotate(cameraMatrix, m4.degToRad(camera.rotation.x));
+    cameraMatrix = m4.yRotate(cameraMatrix, m4.degToRad(camera.rotation.y));
+    cameraMatrix = m4.translate(
+      cameraMatrix,
+      camera.translation.x,
+      camera.translation.y,
+      camera.translation.z
+    );
+  }
 
-    // compute transformation matrix
-    const computeModelViewMatrix = (shape, viewProjectionMatrix) => {
-      M = m4.translate(viewProjectionMatrix,
-         camera.translation.x,
-         camera.translation.y,
-         camera.translation.z)
-       M = m4.xRotate(M, m4.degToRad(shape.rotation.x));
-       M = m4.yRotate(M, m4.degToRad(shape.rotation.y));
-       M = m4.zRotate(M, m4.degToRad(shape.rotation.z));
-       M = m4.scale(M, shape.scale.x, shape.scale.y, shape.scale.z);
-       return M;
-     };
+  // compute transformation matrix
+  const computeModelViewMatrix = (shape, viewProjectionMatrix) => {
+    M = m4.translate(
+      viewProjectionMatrix,
+      camera.translation.x,
+      camera.translation.y,
+      camera.translation.z
+    );
+    M = m4.xRotate(M, m4.degToRad(shape.rotation.x));
+    M = m4.yRotate(M, m4.degToRad(shape.rotation.y));
+    M = m4.zRotate(M, m4.degToRad(shape.rotation.z));
+    M = m4.scale(M, shape.scale.x, shape.scale.y, shape.scale.z);
+    return M;
+  };
 
   const $shapeList = $("#object-list");
   $shapeList.empty();
@@ -292,9 +301,7 @@ const render = () => {
         </li>
       `);
     $shapeList.append($li);
-
   });
-
 
   shapes.forEach((shape) => {
     gl.uniform4f(

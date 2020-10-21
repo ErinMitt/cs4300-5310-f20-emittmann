@@ -17,87 +17,88 @@
         border: 1px solid gray;
       }
       /* Create two equal columns that floats next to each other */
-.column {
-  float: left;
-  width: 50%;
-  padding: 50px;
-}
+      .column {
+        float: left;
+        width: 50%;
+        padding: 50px;
+      }
 
-/* Clear floats after the columns */
-.row:after {
-  content: "";
-  display: table;
-  clear: both;
-}
+      /* Clear floats after the columns */
+      .row:after {
+        content: "";
+        display: table;
+        clear: both;
+      }
     </style>
     <script src="webgl-utils2.js"></script>
   </head>
   <body onload="init();render()">
-      <div class="row">
-          <div class="column" style="background-color:rgb(152, 152, 255);">
-          
-      <h1>A WebGL Mini CAD</h1>
+    <div class="row">
+      <div class="column" style="background-color: rgb(152, 152, 255)">
+        <h1>A WebGL Mini CAD</h1>
 
-      <canvas id="canvas" width="500px" height="200px"></canvas><br />
-      <h2><label><input id="lookAt" type="checkbox"/> Look At</label></h2>
-      X: <input id="ltx" type="number" value="0" step="5"/><br/>
-      Y: <input id="lty" type="number" value="0" step="5"/><br/>
-      Z: <input id="ltz" type="number" value="0" step="5"/><br/>
-      
-      <h2>Camera Translation</h2>
-      X: <input id="ctx" type="number" value="0" step="5"/><br/>
-      Y: <input id="cty" type="number" value="0" step="5"/><br/>
-      Z: <input id="ctz" type="number" value="0" step="5"/><br/>
-      
-      <h2>Camera Rotation</h2>
-      X: <input id="crx" type="number" value="0" step="2"/><br/>
-      Y: <input id="cry" type="number" value="0" step="2"/><br/>
-      Z: <input id="crz" type="number" value="0" step="2"/><br/>
+        <canvas id="canvas" width="500px" height="200px"></canvas><br />
+        <h2>
+          <label><input id="lookAt" type="checkbox" /> Look At</label>
+        </h2>
+        X: <input id="ltx" type="number" value="0" step="5" /><br />
+        Y: <input id="lty" type="number" value="0" step="5" /><br />
+        Z: <input id="ltz" type="number" value="0" step="5" /><br />
+
+        <h2>Camera Translation</h2>
+        X: <input id="ctx" type="number" value="0" step="5" /><br />
+        Y: <input id="cty" type="number" value="0" step="5" /><br />
+        Z: <input id="ctz" type="number" value="0" step="5" /><br />
+
+        <h2>Camera Rotation</h2>
+        X: <input id="crx" type="number" value="0" step="2" /><br />
+        Y: <input id="cry" type="number" value="0" step="2" /><br />
+        Z: <input id="crz" type="number" value="0" step="2" /><br />
+      </div>
+      <div class="column" style="background-color: rgb(152, 152, 255)">
+        <h2>Translation</h2>
+        X: <input id="tx" type="number" value="0" step="5" /><br />
+        Y: <input id="ty" type="number" value="0" step="5" /><br />
+        Z: <input id="tz" type="number" value="0" step="5" /><br />
+        <h2>Scaling</h2>
+        X: <input id="sx" type="number" value="1" min="0" step="0.5" /><br />
+        Y: <input id="sy" type="number" value="1" min="0" step="0.5" /><br />
+        Z: <input id="sz" type="number" value="1" min="0" step="0.2" /><br />
+        <h2>Rotation</h2>
+        X: <input id="rx" type="number" value="0" step="2" /><br />
+        Y: <input id="ry" type="number" value="0" step="2" /><br />
+        Z: <input id="rz" type="number" value="0" step="2" /><br />
+        <h2>Field of view</h2>
+        X: <input id="fv" type="number" value="0" step="2" /><br />
+
+        <h2>Color</h2>
+        <input id="color" type="color" /><br />
+        Select shape:
+        <label>
+          <input type="radio" name="shape" value="RECTANGLE" checked />
+          Rectangle
+        </label>
+        <label>
+          <input type="radio" name="shape" value="TRIANGLE" />
+          Triangle
+        </label>
+        <label>
+          <input type="radio" name="shape" value="CIRCLE" />
+          Circle
+        </label>
+        <label>
+          <input type="radio" name="shape" value="STAR" />
+          Star
+        </label>
+
+        <h2>Object List</h2>
+        <ol id="object-list"></ol>
+
+        <script id="x"></script>
+        <script id="y"></script>
+        <script id="z"></script>
+      </div>
     </div>
-    <div class="column" style="background-color:rgb(152, 152, 255);">
-      <h2>Translation</h2>
-      X: <input id="tx" type="number" value="0" step="5" /><br />
-      Y: <input id="ty" type="number" value="0" step="5" /><br />
-      Z: <input id="tz" type="number" value="0" step="5" /><br />
-      <h2>Scaling</h2>
-      X: <input id="sx" type="number" value="1" min="0" step="0.5" /><br />
-      Y: <input id="sy" type="number" value="1" min="0" step="0.5" /><br />
-      Z: <input id="sz" type="number" value="1" min="0" step="0.2" /><br />
-      <h2>Rotation</h2>
-      X: <input id="rx" type="number" value="0" step="2" /><br />
-      Y: <input id="ry" type="number" value="0" step="2" /><br />
-      Z: <input id="rz" type="number" value="0" step="2" /><br />
-      <h2>Field of view</h2>
-      X: <input id="fv" type="number" value="0" step="2" /><br />
-
-      <h2>Color</h2>
-      <input id="color" type="color" /><br />
-      Select shape:
-      <label>
-        <input type="radio" name="shape" value="RECTANGLE" checked />
-        Rectangle
-      </label>
-      <label>
-        <input type="radio" name="shape" value="TRIANGLE" />
-        Triangle
-      </label>
-      <label>
-        <input type="radio" name="shape" value="CIRCLE" />
-        Circle
-      </label>
-      <label>
-        <input type="radio" name="shape" value="STAR" />
-        Star
-      </label>
-
-      <h2>Object List</h2>
-      <ol id="object-list"></ol>
- 
-    <script id="x"></script>
-    <script id="y"></script>
-    <script id="z"></script>
-  </div>
-</div>
 
     <script id="vertex-shader-3d" type="x-shader/x-vertex">
       attribute vec4 a_coords;
