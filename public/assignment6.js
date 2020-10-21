@@ -9,13 +9,10 @@ const TRIANGLE = "TRIANGLE";
 const CIRCLE = "CIRCLE";
 const STAR = "STAR";
 const origin = { x: 0, y: 0, z: 0 };
-const camera = "CAMERA";
-[
-  {
-  position: origin, 
-  rotation: { x: 0, y: 0, z: 0 },
-  },
-];
+var camera = {
+  rotation: {x:0, y:0, z:0},
+translation: {x:0,y:0,z:0}
+};
 
 const sizeOne = { width: 1, height: 1, depth: 1 };
 const CUBE = "CUBE";
@@ -28,12 +25,6 @@ let shapes = [
     translation: { x: -15, y: 0, z: -20 },
     rotation: { x: 0, y: 0, z: 0 },
     scale: { x: 10, y: 10, z: 10 },
-  },
-  {
-    type: camera,
-    position: origin,
-    translation: { x: 0, y: 0, z: 0 },
-    rotation: { x: 0, y: 0, z: 0 },
   },
   {
     type: TRIANGLE,
@@ -262,11 +253,23 @@ const render = () => {
       camera.translation.z);
 }
 
-
+    // compute transformation matrix
+    const computeModelViewMatrix = (shape, viewProjectionMatrix) => {
+      M = m4.translate(viewProjectionMatrix,
+         camera.translation.x,
+         camera.translation.y,
+         camera.translation.z)
+       M = m4.xRotate(M, m4.degToRad(shape.rotation.x));
+       M = m4.yRotate(M, m4.degToRad(shape.rotation.y));
+       M = m4.zRotate(M, m4.degToRad(shape.rotation.z));
+       M = m4.scale(M, shape.scale.x, shape.scale.y, shape.scale.z);
+       return M;
+     };
 
   const $shapeList = $("#object-list");
   $shapeList.empty();
   shapes.forEach((shape, index) => {
+    let M = computeModelViewMatrix(shape, viewProjectionMatrix);
     const $li = $(`
       <li>
       <button onclick="deleteShape(${index})">
@@ -289,8 +292,7 @@ const render = () => {
         </li>
       `);
     $shapeList.append($li);
-    let M = computeModelViewMatrix(
-      shape, viewProjectionMatrix)
+
   });
 
 
@@ -303,20 +305,6 @@ const render = () => {
       1
     );
 
-    // compute transformation matrix
-    const computeModelViewMatrix = (shape, viewProjectionMatrix) => {
-     // let M = m4.perspective(fieldOfViewRadians, aspect, zNear, zFar);
-      M = m4.translate(viewProjectionMatrix,
-        shape.translation.x,
-        shape.translation.y,
-        shape.translation.z)
-      M = m4.xRotate(M, m4.degToRad(shape.rotation.x));
-      M = m4.yRotate(M, m4.degToRad(shape.rotation.y));
-      M = m4.zRotate(M, m4.degToRad(shape.rotation.z));
-      M = m4.scale(M, shape.scale.x, shape.scale.y, shape.scale.z);
-      return M;
-    };
-    let M = computeModelViewMatrix(gl.canvas, shape, aspect, zNear, zFar);
     gl.uniformMatrix4fv(uniformMatrix, false, M);
     if (shape.type === CUBE) {
       renderCube(shape);
@@ -325,7 +313,6 @@ const render = () => {
     } else if (shape.type === TRIANGLE) {
       renderTriangle(shape);
     }
-    
   });
 };
 const selectShape = (selectedIndex) => {
