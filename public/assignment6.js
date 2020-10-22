@@ -11,7 +11,7 @@ const STAR = "STAR";
 const origin = { x: 0, y: 0, z: 0 };
 var camera = {
   rotation: { x: 0, y: 0, z: 0 },
-  translation: { x: 0, y: 0, z: 0 },
+  translation: { x: 0, y: 0, z: 10 },
 };
 
 const sizeOne = { width: 1, height: 1, depth: 1 };
@@ -22,7 +22,7 @@ let shapes = [
     position: origin,
     dimensions: sizeOne,
     color: BLUE_RGB,
-    translation: { x: -15, y: 0, z: -20 },
+    translation: { x: -10, y: 0, z: -20 },
     rotation: { x: 0, y: 0, z: 0 },
     scale: { x: 10, y: 10, z: 10 },
   },
@@ -31,7 +31,7 @@ let shapes = [
     position: origin,
     dimensions: sizeOne,
     color: RED_RGB,
-    translation: { x: 15, y: 0, z: -20 },
+    translation: { x: 10, y: 0, z: -20 },
     rotation: { x: 0, y: 0, z: 180 },
     scale: { x: 10, y: 10, z: 10 },
   },
@@ -111,12 +111,29 @@ const doMouseDown = (event) => {
   };
   addShape(shape, shapeType);
 };
-let fieldOfViewRadians = m4.degToRad(60);
+let fieldOfViewRadians = m4.degToRad(70);
 const up = [0, 1, 0];
 let target = [0, 0, 0];
-let lookAt = true;
+let lookAt = false;
 const init = () => {
   selectShape(0);
+  document.getElementById("tx").onchange = (event) =>
+    updateTranslation(event, "x");
+  document.getElementById("ty").onchange = (event) =>
+    updateTranslation(event, "y");
+  document.getElementById("tz").onchange = (event) =>
+    updateTranslation(event, "z");
+
+  document.getElementById("sx").onchange = (event) => updateScale(event, "x");
+  document.getElementById("sy").onchange = (event) => updateScale(event, "y");
+  document.getElementById("sz").onchange = (event) => updateScale(event, "z");
+
+  document.getElementById("rx").onchange = (event) =>
+    updateRotation(event, "x");
+  document.getElementById("ry").onchange = (event) =>
+    updateRotation(event, "y");
+  document.getElementById("rz").onchange = (event) =>
+    updateRotation(event, "z");
   document.getElementById("fv").value = m4.radToDeg(fieldOfViewRadians);
   document.getElementById("lookAt").onchange = (event) =>
     webglUtils.toggleLookAt(event);
@@ -145,7 +162,7 @@ const init = () => {
 
   const canvas = document.querySelector("#canvas");
   gl = canvas.getContext("webgl");
-  // m4 = canvas.getContext("m4");
+
 
   canvas.addEventListener("mousedown", doMouseDown, false);
 
@@ -210,9 +227,9 @@ const updateColor = (event) => {
 const computeModelViewMatrix = (shape, viewProjectionMatrix) => {
   let M = m4.translate(
     viewProjectionMatrix,
-    camera.translation.x,
-    camera.translation.y,
-    camera.translation.z
+    shape.translation.x,
+    shape.translation.y,
+    shape.translation.z
   );
   M = m4.xRotate(M, m4.degToRad(shape.rotation.x));
   M = m4.yRotate(M, m4.degToRad(shape.rotation.y));
@@ -266,7 +283,9 @@ const render = () => {
       camera.translation.z
     );
   }
+  console.log(fieldOfViewRadians)
   const projectionMatrix = m4.perspective(
+
     fieldOfViewRadians,
     aspect,
     zNear,

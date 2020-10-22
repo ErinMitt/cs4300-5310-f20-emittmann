@@ -8,8 +8,14 @@ const RECTANGLE = "RECTANGLE";
 const TRIANGLE = "TRIANGLE";
 const CIRCLE = "CIRCLE";
 const STAR = "STAR";
-
 const origin = { x: 0, y: 0, z: 0 };
+var camera = {
+  rotation: { x: 0, y: 0, z: 0 },
+  translation: { x: 0, y: 0, z: 10 },
+};
+
+let lightSource = [0.4, 0.3, 0.5]
+
 const sizeOne = { width: 1, height: 1, depth: 1 };
 const CUBE = "CUBE";
 let shapes = [
@@ -18,7 +24,7 @@ let shapes = [
     position: origin,
     dimensions: sizeOne,
     color: BLUE_RGB,
-    translation: { x: -15, y: 0, z: -20 },
+    translation: { x: -10, y: 0, z: -20 },
     rotation: { x: 0, y: 0, z: 0 },
     scale: { x: 10, y: 10, z: 10 },
   },
@@ -27,7 +33,7 @@ let shapes = [
     position: origin,
     dimensions: sizeOne,
     color: RED_RGB,
-    translation: { x: 15, y: 0, z: -20 },
+    translation: { x: 10, y: 0, z: -20 },
     rotation: { x: 0, y: 0, z: 180 },
     scale: { x: 10, y: 10, z: 10 },
   },
@@ -107,7 +113,10 @@ const doMouseDown = (event) => {
   };
   addShape(shape, shapeType);
 };
-let fieldOfViewRadians = m4.degToRad(60);
+let fieldOfViewRadians = m4.degToRad(70);
+const up = [0, 1, 0];
+let target = [0, 0, 0];
+let lookAt = false;
 const init = () => {
   selectShape(0);
   document.getElementById("tx").onchange = (event) =>
@@ -127,6 +136,27 @@ const init = () => {
     updateRotation(event, "y");
   document.getElementById("rz").onchange = (event) =>
     updateRotation(event, "z");
+  document.getElementById("fv").value = m4.radToDeg(fieldOfViewRadians);
+  document.getElementById("lookAt").onchange = (event) =>
+    webglUtils.toggleLookAt(event);
+  document.getElementById("ctx").onchange = (event) =>
+    webglUtils.updateCameraTranslation(event, "x");
+  document.getElementById("cty").onchange = (event) =>
+    webglUtils.updateCameraTranslation(event, "y");
+  document.getElementById("ctz").onchange = (event) =>
+    webglUtils.updateCameraTranslation(event, "z");
+  document.getElementById("crx").onchange = (event) =>
+    webglUtils.updateCameraRotation(event, "x");
+  document.getElementById("cry").onchange = (event) =>
+    webglUtils.updateCameraRotation(event, "y");
+  document.getElementById("crz").onchange = (event) =>
+    webglUtils.updateCameraRotation(event, "z");
+  document.getElementById("ltx").onchange = (event) =>
+    webglUtils.updateLookAtTranslation(event, 0);
+  document.getElementById("lty").onchange = (event) =>
+    webglUtils.updateLookAtTranslation(event, 1);
+  document.getElementById("ltz").onchange = (event) =>
+    webglUtils.updateLookAtTranslation(event, 2);
 
   document.getElementById("fv").onchange = (event) => updateFieldOfView(event);
 
@@ -134,6 +164,7 @@ const init = () => {
 
   const canvas = document.querySelector("#canvas");
   gl = canvas.getContext("webgl");
+
 
   canvas.addEventListener("mousedown", doMouseDown, false);
 
@@ -194,7 +225,20 @@ const updateColor = (event) => {
   // TODO: update the color of the shape.
   // Use webglUtils.hexToRgb to convert hex color to rgb
 };
-
+// compute transformation matrix
+const computeModelViewMatrix = (shape, viewProjectionMatrix) => {
+  let M = m4.translate(
+    viewProjectionMatrix,
+    shape.translation.x,
+    shape.translation.y,
+    shape.translation.z
+  );
+  M = m4.xRotate(M, m4.degToRad(shape.rotation.x));
+  M = m4.yRotate(M, m4.degToRad(shape.rotation.y));
+  M = m4.zRotate(M, m4.degToRad(shape.rotation.z));
+  M = m4.scale(M, shape.scale.x, shape.scale.y, shape.scale.z);
+  return M;
+};
 const render = () => {
   gl.bindBuffer(gl.ARRAY_BUFFER, bufferCoords);
   gl.vertexAttribPointer(
@@ -214,6 +258,43 @@ const render = () => {
   const zFar = 2000;
 
   gl.bindBuffer(gl.ARRAY_BUFFER, bufferCoords);
+  let cameraMatrix = m4.identity();
+  if (lookAt) {
+    cameraMatrix = m4.translate(
+      cameraMatrix,
+      camera.translation.x,
+      camera.translation.y,
+      camera.translation.z
+    );
+    const cameraPosition = [
+      cameraMatrix[12],
+      cameraMatrix[13],
+      cameraMatrix[14],
+    ];
+    cameraMatrix = m4.lookAt(cameraPosition, target, up);
+    cameraMatrix = m4.inverse(cameraMatrix);
+
+  } else {
+    cameraMatrix = m4.zRotate(cameraMatrix, m4.degToRad(camera.rotation.z));
+    cameraMatrix = m4.xRotate(cameraMatrix, m4.degToRad(camera.rotation.x));
+    cameraMatrix = m4.yRotate(cameraMatrix, m4.degToRad(camera.rotation.y));
+    cameraMatrix = m4.translate(
+      cameraMatrix,
+      camera.translation.x,
+      camera.translation.y,
+      camera.translation.z
+    );
+  }
+  console.log(fieldOfViewRadians)
+  const projectionMatrix = m4.perspective(
+
+    fieldOfViewRadians,
+    aspect,
+    zNear,
+    zFar
+  );
+
+  const viewProjectionMatrix = m4.multiply(projectionMatrix, cameraMatrix);
 
   const $shapeList = $("#object-list");
   $shapeList.empty();
@@ -249,23 +330,8 @@ const render = () => {
       shape.color.blue,
       1
     );
-
-    // compute transformation matrix
-    const computeModelViewMatrix = (canvas, shape, aspect, zNear, zFar) => {
-      let M = m4.perspective(fieldOfViewRadians, aspect, zNear, zFar);
-      M = m4.translate(
-        M,
-        shape.translation.x,
-        shape.translation.y,
-        shape.translation.z
-      );
-      M = m4.xRotate(M, m4.degToRad(shape.rotation.x));
-      M = m4.yRotate(M, m4.degToRad(shape.rotation.y));
-      M = m4.zRotate(M, m4.degToRad(shape.rotation.z));
-      M = m4.scale(M, shape.scale.x, shape.scale.y, shape.scale.z);
-      return M;
-    };
-    let M = computeModelViewMatrix(gl.canvas, shape, aspect, zNear, zFar);
+    console.log(shape);
+    const M = computeModelViewMatrix(shape, viewProjectionMatrix);
     gl.uniformMatrix4fv(uniformMatrix, false, M);
     if (shape.type === CUBE) {
       renderCube(shape);
