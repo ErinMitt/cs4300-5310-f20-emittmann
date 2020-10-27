@@ -298,4 +298,9 @@ updateCameraRotation: (event, axis) => {
     var primitiveType = gl.TRIANGLES;
     gl.drawArrays(gl.TRIANGLES, 0, 16 * 6);
   },
+  updateLightDirection: (event, index) => {
+    lightSource[index] = parseFloat(event.target.value)
+    render()
+},
+
 }

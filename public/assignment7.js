@@ -162,6 +162,17 @@ const init = () => {
     webglUtils.updateLookAtTranslation(event, 1);
   document.getElementById("ltz").onchange = (event) =>
     webglUtils.updateLookAtTranslation(event, 2);
+    document.getElementById("dlrx").value = lightSource[0]
+    document.getElementById("dlry").value = lightSource[1]
+    document.getElementById("dlrz").value = lightSource[2]
+
+    document.getElementById("dlrx").onchange
+        = event => webglUtils.updateLightDirection(event, 0)
+    document.getElementById("dlry").onchange
+        = event => webglUtils.updateLightDirection(event, 1)
+    document.getElementById("dlrz").onchange
+        = event => webglUtils.updateLightDirection(event, 2)
+
 
   document.getElementById("fv").onchange = (event) => updateFieldOfView(event);
 
@@ -523,7 +534,7 @@ const renderCube = (cube) => {
   geometry = new Float32Array(geometry)
   gl.bindBuffer(gl.ARRAY_BUFFER, bufferCoords);
   gl.bufferData(gl.ARRAY_BUFFER, geometry, gl.STATIC_DRAW)
-  var normals = new Float32Array([
+  let normals = new Float32Array([
     0,0, 1,  0,0, 1,  0,0, 1,    0,0, 1,  0,0, 1,  0,0, 1,
     0,0,-1,  0,0,-1,  0,0,-1,    0,0,-1,  0,0,-1,  0,0,-1,
     0,-1,0,  0,-1,0,  0,-1,0,    0,-1,0,  0,-1,0,  0,-1,0,
@@ -535,6 +546,7 @@ const renderCube = (cube) => {
    gl.bufferData(gl.ARRAY_BUFFER, normals, gl.STATIC_DRAW);
   gl.drawArrays(gl.TRIANGLES, 0, 6 * 6);
 };
+
 const deleteShape = (shapeIndex) => {
   shapes.splice(shapeIndex, 1);
   render();
