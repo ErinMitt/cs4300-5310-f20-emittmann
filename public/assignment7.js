@@ -10,11 +10,11 @@ const CIRCLE = "CIRCLE";
 const STAR = "STAR";
 const origin = { x: 0, y: 0, z: 0 };
 var camera = {
-  rotation: { x: 0, y: 0, z: 0 },
-  translation: { x: 0, y: 0, z: 10 },
+  rotation: { x: 22, y: 38, z: 2},
+  translation: { x: 5, y: -45, z: 15 },
 };
 
-let lightSource = [0.4, 0.3, 0.5];
+let lightSource = [-0.4, -0.3, -.5];
 let attributeNormals;
 let uniformWorldViewProjection;
 let uniformWorldInverseTranspose;
@@ -25,41 +25,23 @@ const sizeOne = { width: 1, height: 1, depth: 1 };
 const CUBE = "CUBE";
 let shapes = [
   {
-    type: RECTANGLE,
+    type: CUBE,
+    position: origin,
+    dimensions: sizeOne,
+    color: RED_RGB,
+    translation: { x: 75, y: -15, z: -75 },
+    scale: { x: 1, y: 1, z: 1 },
+    rotation: { x: 0, y: 45, z: 0 },
+  },
+  {
+    type: CUBE,
     position: origin,
     dimensions: sizeOne,
     color: BLUE_RGB,
-    translation: { x: -10, y: 0, z: -20 },
-    rotation: { x: 0, y: 0, z: 0 },
-    scale: { x: 10, y: 10, z: 10 },
+    translation: { x: 30, y: -15, z: -75 },
+    scale: { x: 1, y: 1, z: 1 },
+    rotation: { x: 0, y: 45, z: 0 },
   },
-  {
-    type: TRIANGLE,
-    position: origin,
-    dimensions: sizeOne,
-    color: RED_RGB,
-    translation: { x: 10, y: 0, z: -20 },
-    rotation: { x: 0, y: 0, z: 180 },
-    scale: { x: 10, y: 10, z: 10 },
-  },
-  /*{
-    type: CIRCLE,
-    position: origin,
-    dimensions: sizeOne,
-    color: RED_RGB,
-    translation: {x: 100,y: 100, z: -20},
-    rotation: {x:0, y:0, z: 0},
-    scale: {x: 50, y: 50, z:0}
-  },
-  {
-    type: STAR,
-    position: origin,
-    dimensions: sizeOne,
-    color: RED_RGB,
-    translation: {x: 400,y: 100, z:-10},
-    rotation: {x:0, y:0, z: 0},
-    scale: {x: 50, y: 50, z:0}
-  },*/
   {
     type: CUBE,
     position: origin,
@@ -392,9 +374,9 @@ const render = () => {
     if (shape.type === CUBE) {
       webglUtils.renderCube(shape);
     } else if (shape.type === RECTANGLE) {
-      renderRectangle(shape);
+      webglUtils.renderRectangle(shape);
     } else if (shape.type === TRIANGLE) {
-      renderTriangle(shape);
+      webglUtils.renderTriangle(shape);
     }
   });
 };

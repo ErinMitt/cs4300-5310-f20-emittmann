@@ -10,8 +10,8 @@ const CIRCLE = "CIRCLE";
 const STAR = "STAR";
 const origin = { x: 0, y: 0, z: 0 };
 var camera = {
-  rotation: { x: 0, y: 0, z: 0 },
-  translation: { x: 0, y: 0, z: 10 },
+  rotation: { x: 22, y: 38, z: 2},
+  translation: { x: 5, y: -45, z: 15 },
 };
 
 const sizeOne = { width: 1, height: 1, depth: 1 };

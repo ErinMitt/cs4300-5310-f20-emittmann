@@ -206,8 +206,14 @@ const webglUtils = {
       x1, y2, 0,  x2, y1, 0,  x2, y2, 0,
     ]), gl.STATIC_DRAW);
 
+    var normals = new Float32Array([
+      0,0, 1,  0,0, 1,  0,0, 1,    0,0, 1,  0,0, 1,  0,0, 1,
+    ]);
+    gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, normals, gl.STATIC_DRAW);
     gl.drawArrays(gl.TRIANGLES, 0, 6);
   },
+
   renderTriangle: (triangle) => {
     const x1 = triangle.position.x
       - triangle.dimensions.width / 2
@@ -224,8 +230,17 @@ const webglUtils = {
     const float32Array = new Float32Array([
       x1, y1, 0, x3, y3, 0, x2, y2, 0])
 
+      gl.bindBuffer(gl.ARRAY_BUFFER, bufferCoords);
     gl.bufferData(gl.ARRAY_BUFFER, float32Array, gl.STATIC_DRAW);
+var normals = new Float32Array([
 
+      0,0, 1,  0,0, 1,  0,0, 1
+
+    ]);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
+
+    gl.bufferData(gl.ARRAY_BUFFER, normals, gl.STATIC_DRAW);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
   },
   renderLetterF: (letterF) => {
