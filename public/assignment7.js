@@ -14,12 +14,12 @@ var camera = {
   translation: { x: 0, y: 0, z: 10 },
 };
 
-let lightSource = [0.4, 0.3, 0.5]
-let attributeNormals
-let uniformWorldViewProjection
-let uniformWorldInverseTranspose
-let uniformReverseLightDirectionLocation
-let normalBuffer
+let lightSource = [0.4, 0.3, 0.5];
+let attributeNormals;
+let uniformWorldViewProjection;
+let uniformWorldInverseTranspose;
+let uniformReverseLightDirectionLocation;
+let normalBuffer;
 
 const sizeOne = { width: 1, height: 1, depth: 1 };
 const CUBE = "CUBE";
@@ -162,17 +162,16 @@ const init = () => {
     webglUtils.updateLookAtTranslation(event, 1);
   document.getElementById("ltz").onchange = (event) =>
     webglUtils.updateLookAtTranslation(event, 2);
-    document.getElementById("dlrx").value = lightSource[0]
-    document.getElementById("dlry").value = lightSource[1]
-    document.getElementById("dlrz").value = lightSource[2]
+  document.getElementById("dlrx").value = lightSource[0];
+  document.getElementById("dlry").value = lightSource[1];
+  document.getElementById("dlrz").value = lightSource[2];
 
-    document.getElementById("dlrx").onchange
-        = event => webglUtils.updateLightDirection(event, 0)
-    document.getElementById("dlry").onchange
-        = event => webglUtils.updateLightDirection(event, 1)
-    document.getElementById("dlrz").onchange
-        = event => webglUtils.updateLightDirection(event, 2)
-
+  document.getElementById("dlrx").onchange = (event) =>
+    webglUtils.updateLightDirection(event, 0);
+  document.getElementById("dlry").onchange = (event) =>
+    webglUtils.updateLightDirection(event, 1);
+  document.getElementById("dlrz").onchange = (event) =>
+    webglUtils.updateLightDirection(event, 2);
 
   document.getElementById("fv").onchange = (event) => updateFieldOfView(event);
 
@@ -180,7 +179,6 @@ const init = () => {
 
   const canvas = document.querySelector("#canvas");
   gl = canvas.getContext("webgl");
-
 
   canvas.addEventListener("mousedown", doMouseDown, false);
 
@@ -207,12 +205,18 @@ const init = () => {
   gl.enableVertexAttribArray(attributeNormals);
   normalBuffer = gl.createBuffer();
 
-  uniformWorldViewProjection
-    = gl.getUniformLocation(program, "u_worldViewProjection");
-  uniformWorldInverseTranspose
-    = gl.getUniformLocation(program, "u_worldInverseTranspose");
-  uniformReverseLightDirectionLocation
-    = gl.getUniformLocation(program, "u_reverseLightDirection");
+  uniformWorldViewProjection = gl.getUniformLocation(
+    program,
+    "u_worldViewProjection"
+  );
+  uniformWorldInverseTranspose = gl.getUniformLocation(
+    program,
+    "u_worldInverseTranspose"
+  );
+  uniformReverseLightDirectionLocation = gl.getUniformLocation(
+    program,
+    "u_reverseLightDirection"
+  );
 
   // configure canvas resolution
   gl.uniform2f(uniformResolution, gl.canvas.width, gl.canvas.height);
@@ -303,7 +307,6 @@ const render = () => {
     ];
     cameraMatrix = m4.lookAt(cameraPosition, target, up);
     cameraMatrix = m4.inverse(cameraMatrix);
-
   } else {
     cameraMatrix = m4.zRotate(cameraMatrix, m4.degToRad(camera.rotation.z));
     cameraMatrix = m4.xRotate(cameraMatrix, m4.degToRad(camera.rotation.x));
@@ -315,9 +318,8 @@ const render = () => {
       camera.translation.z
     );
   }
-  console.log(fieldOfViewRadians)
+  console.log(fieldOfViewRadians);
   const projectionMatrix = m4.perspective(
-
     fieldOfViewRadians,
     aspect,
     zNear,
@@ -326,22 +328,29 @@ const render = () => {
 
   const viewProjectionMatrix = m4.multiply(projectionMatrix, cameraMatrix);
 
+  let worldMatrix = m4.identity();
+  const worldViewProjectionMatrix = m4.multiply(
+    viewProjectionMatrix,
+    worldMatrix
+  );
+  const worldInverseMatrix = m4.inverse(worldMatrix);
+  const worldInverseTransposeMatrix = m4.transpose(worldInverseMatrix);
 
-  let worldMatrix = m4.identity()
-  const worldViewProjectionMatrix
-      = m4.multiply(viewProjectionMatrix, worldMatrix);
-  const worldInverseMatrix
-  = m4.inverse(worldMatrix);
-  const worldInverseTransposeMatrix
-      = m4.transpose(worldInverseMatrix);
+  gl.uniformMatrix4fv(
+    uniformWorldViewProjection,
+    false,
+    worldViewProjectionMatrix
+  );
+  gl.uniformMatrix4fv(
+    uniformWorldInverseTranspose,
+    false,
+    worldInverseTransposeMatrix
+  );
 
-  gl.uniformMatrix4fv(uniformWorldViewProjection, false,
-      worldViewProjectionMatrix);
-  gl.uniformMatrix4fv(uniformWorldInverseTranspose, false, 
-      worldInverseTransposeMatrix);
-
-  gl.uniform3fv(uniformReverseLightDirectionLocation,
-      m4.normalize(lightSource));
+  gl.uniform3fv(
+    uniformReverseLightDirectionLocation,
+    m4.normalize(lightSource)
+  );
 
   const $shapeList = $("#object-list");
   $shapeList.empty();
@@ -378,10 +387,10 @@ const render = () => {
       1
     );
     console.log(shape);
-    let M = computeModelViewMatrix(shape, worldViewProjectionMatrix)
-    gl.uniformMatrix4fv(uniformWorldViewProjection, false, M)
+    let M = computeModelViewMatrix(shape, worldViewProjectionMatrix);
+    gl.uniformMatrix4fv(uniformWorldViewProjection, false, M);
     if (shape.type === CUBE) {
-      renderCube(shape);
+      webglUtils.renderCube(shape);
     } else if (shape.type === RECTANGLE) {
       renderRectangle(shape);
     } else if (shape.type === TRIANGLE) {
@@ -420,7 +429,7 @@ const renderTriangle = (triangle) => {
   gl.drawArrays(gl.TRIANGLES, 0, 3);
 };
 
-const renderCube = (cube) => {
+/*const renderCube = (cube) => {
   let geometry = [
     0,
     0,
@@ -545,7 +554,7 @@ const renderCube = (cube) => {
    gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
    gl.bufferData(gl.ARRAY_BUFFER, normals, gl.STATIC_DRAW);
   gl.drawArrays(gl.TRIANGLES, 0, 6 * 6);
-};
+};*/
 
 const deleteShape = (shapeIndex) => {
   shapes.splice(shapeIndex, 1);
