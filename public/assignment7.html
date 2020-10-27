@@ -102,21 +102,31 @@
 
     <script id="vertex-shader-3d" type="x-shader/x-vertex">
       attribute vec4 a_coords;
-       uniform mat4 u_matrix;
-       uniform vec4 u_color;
-        varying vec4 v_color;
-       void main() {
-        // multiply coordinates by a transformation matrix
-        gl_Position = u_matrix * a_coords;
-        v_color = u_color;
+      attribute vec3 a_normals;
+      uniform mat4 u_worldViewProjection;
+      uniform mat4 u_worldInverseTranspose;
+      varying vec3 v_normal;
+      void main() {
+         gl_Position = u_worldViewProjection * a_coords;
+         v_normal = mat3(u_worldInverseTranspose) * a_normals;
+      
       }
     </script>
 
     <script id="fragment-shader-3d" type="x-shader/x-fragment">
       precision mediump float;
-      varying vec4 v_color;
+      varying vec3 v_normal;
+      
+      uniform vec3 u_reverseLightDirection;
+      uniform vec4 u_color;
+      
       void main() {
-        gl_FragColor = v_color;
+         vec3 normal = normalize(v_normal);
+         float light = dot(normal, u_reverseLightDirection);
+      
+         gl_FragColor = u_color;
+         gl_FragColor.rgb *= light;
+      
       }
     </script>
     <script src="m4.js" type="application/javascript"></script>
