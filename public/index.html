@@ -1,20 +1,23 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Computer Graphics</title>
-    </head>
-    <body>
-        <h1>Welcome to WebGL</h1>
-        <ul>
-          <li>
-            <a href="assignment1.html">A1 - Simple 2D Triangle</a><br />
-            <a href="assignment2.html">A2 - A WebGL Mini CAD</a><br />
-            <a href="assignment3.html">A3 - Interacting With A WebGL Mini CAD</a><br />
-            <a href="assignment4.html">A4 - Transformations</a><br />
-            <a href="assignment5.html">A5 - A 3D Perspective</a><br />
-            <a href="assignment6.html">A6 - Moving the Camera</a><br />
-            <a href="assignment7.html">A7 - Lighting and Shading</a>
-          </li>
-        </ul>
-    </body>
-</html>
+<script id="vertex-shader" type="x-shader/x-vertex">
+    attribute vec4 aVertexPosition;
+ 
+    uniform mat4 uModelViewMatrix;
+    uniform mat4 uProjectionMatrix;
+ 
+    void main() {
+      gl_Position = uProjectionMatrix * uModelViewMatrix * aVertexPosition;
+    }
+ </script>
+ <head>
+    <meta charset="UTF-8">
+    <script src="shaders.js"></script>
+    <script src="buffers.js"></script>
+    <script src="gl-matrix.js"></script>
+    <script src="render.js"></script>
+    <title>Title</title>
+</head>
+ <script id="fragment-shader" type="x-shader/x-vertex">
+    void main() {
+      gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+    }
+ </script>
