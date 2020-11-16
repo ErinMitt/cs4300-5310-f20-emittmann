@@ -7,3 +7,5 @@ const main = () => {
     const buffers = initializeBuffers(gl)
     drawScene(gl, parameters, buffers)
 }
+
+
